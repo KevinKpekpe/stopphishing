@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +14,17 @@
         .alert-animation {
             animation: slideIn 0.5s ease-out;
         }
+
         @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
         }
+
         .quiz-option:hover {
             transform: translateX(10px);
             transition: transform 0.3s ease;
@@ -38,21 +46,26 @@
         }
     </script>
 </head>
+
 <body class="bg-gray-100 dark:bg-dark-200 dark:text-gray-100 transition-colors duration-200">
     <!-- Barre de progression -->
     <div id="readingProgress" class="fixed top-0 left-0 h-1 bg-blue-600 z-50" style="width: 0%"></div>
 
     <!-- Boutons flottants -->
     <div class="fixed bottom-4 right-4 space-y-4 z-50">
-        <button id="darkModeToggle" class="bg-blue-600 dark:bg-blue-400 text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
+        <button id="darkModeToggle"
+            class="bg-blue-600 dark:bg-blue-400 text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
             <svg class="w-6 h-6 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
             <svg class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
         </button>
-        <button id="backToTop" class="hidden bg-blue-600 dark:bg-blue-400 text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
+        <button id="backToTop"
+            class="hidden bg-blue-600 dark:bg-blue-400 text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
@@ -64,15 +77,14 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold flex items-center">
                 <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 Stop Phishing
             </h1>
             <ul class="hidden md:flex space-x-6">
                 <li><a href="#accueil" class="hover:text-blue-200 transition">Accueil</a></li>
                 <li><a href="#types" class="hover:text-blue-200 transition">Types</a></li>
-                <li><a href="#protection" class="hover:text-blue-200 transition">Protection</a></li>
-                <li><a href="#quiz" class="hover:text-blue-200 transition">Quiz</a></li>
                 <li><a href="#contact" class="hover:text-blue-200 transition">Contact</a></li>
             </ul>
             <button id="mobileMenuButton" class="md:hidden">
@@ -98,12 +110,15 @@
             <div class="container mx-auto px-4 h-full flex items-center">
                 <div class="max-w-2xl text-white" data-aos="fade-right">
                     <h2 class="text-5xl font-bold mb-4">Protégez-vous contre le Phishing</h2>
-                    <p class="text-xl mb-8">Découvrez comment identifier et vous protéger des tentatives d'hameçonnage en ligne.</p>
+                    <p class="text-xl mb-8">Découvrez comment identifier et vous protéger des tentatives d'hameçonnage
+                        en ligne.</p>
                     <div class="flex space-x-4">
-                        <a href="#types" class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 transition transform hover:scale-105">
+                        <a href="#types"
+                            class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 transition transform hover:scale-105">
                             En savoir plus
                         </a>
-                        <a href="#contact" class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-blue-600 transition transform hover:scale-105">
+                        <a href="#contact"
+                            class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-blue-600 transition transform hover:scale-105">
                             Nous contacter
                         </a>
                     </div>
@@ -117,7 +132,9 @@
         <div class="flex items-center">
             <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clip-rule="evenodd" />
                 </svg>
             </div>
             <div class="ml-3">
@@ -133,10 +150,25 @@
             <h3 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Statistiques du Phishing</h3>
             <div class="grid md:grid-cols-4 gap-8">
                 <div class="p-6 bg-blue-50 dark:bg-dark-200 rounded-lg" data-aos="fade-up" data-aos-delay="100">
-                    <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2 counter" data-target="90">80</div>
+                    <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2 counter" data-target="90">80
+                    </div>
                     <p class="text-gray-600 dark:text-gray-400">% des cyberattaques débutent par un email</p>
                 </div>
-                <!-- Autres statistiques similaires -->
+                <div class="p-6 bg-blue-50 dark:bg-dark-200 rounded-lg" data-aos="fade-up" data-aos-delay="200">
+                    <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2 counter" data-target="76">76
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400">% des entreprises ont été ciblées en 2023</p>
+                </div>
+                <div class="p-6 bg-blue-50 dark:bg-dark-200 rounded-lg" data-aos="fade-up" data-aos-delay="300">
+                    <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2 counter" data-target="3">3
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400">Millions € de pertes moyennes par attaque</p>
+                </div>
+                <div class="p-6 bg-blue-50 dark:bg-dark-200 rounded-lg" data-aos="fade-up" data-aos-delay="400">
+                    <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2 counter" data-target="65">65
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400">% d'augmentation des attaques depuis 2020</p>
+                </div>
             </div>
         </div>
     </section>
@@ -146,21 +178,103 @@
         <div class="container mx-auto px-4">
             <h3 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Types de Phishing</h3>
             <div class="grid md:grid-cols-3 gap-8">
-                <!-- Carte Type 1 -->
-                <div class="bg-white dark:bg-dark-100 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform" data-aos="fade-up">
+                <div class="bg-white dark:bg-dark-100 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform"
+                    data-aos="fade-up">
                     <img src="https://picsum.photos/400/250" alt="Email phishing" class="w-full h-48 object-cover">
                     <div class="p-6">
                         <h4 class="font-bold text-xl mb-2">Email Phishing</h4>
-                        <p class="text-gray-600 dark:text-gray-400">Les techniques les plus courantes utilisées dans les emails frauduleux.</p>
+                        <p class="text-gray-600 dark:text-gray-400">Les techniques les plus courantes utilisées dans les
+                            emails frauduleux.</p>
                         <button class="mt-4 text-blue-600 dark:text-blue-400 hover:underline">En savoir plus →</button>
                     </div>
                 </div>
-                <!-- Ajouter d'autres cartes similaires -->
+                <div class="bg-white dark:bg-dark-100 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform"
+                    data-aos="fade-up">
+                    <img src="https://picsum.photos/400/251" alt="Spear Phishing" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h4 class="font-bold text-xl mb-2">Spear Phishing</h4>
+                        <p class="text-gray-600 dark:text-gray-400">Attaques ciblées visant des individus ou
+                            organisations spécifiques.</p>
+                        <button class="mt-4 text-blue-600 dark:text-blue-400 hover:underline">En savoir plus →</button>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-dark-100 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform"
+                    data-aos="fade-up">
+                    <img src="https://picsum.photos/400/252" alt="Smishing" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h4 class="font-bold text-xl mb-2">Smishing</h4>
+                        <p class="text-gray-600 dark:text-gray-400">Phishing par SMS et messages texte sur mobile.</p>
+                        <button class="mt-4 text-blue-600 dark:text-blue-400 hover:underline">En savoir plus →</button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- Section À propos du Phishing -->
+    <section class="py-16 bg-white dark:bg-dark-100">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h3 class="text-3xl font-bold mb-8" data-aos="fade-up">À propos du Phishing</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-6" data-aos="fade-up">
+                    Le phishing est une forme de cybercriminalité qui consiste à tromper les utilisateurs pour obtenir
+                    des informations sensibles. Les cybercriminels se font passer pour des entités de confiance afin de
+                    voler des données personnelles et financières.
+                </p>
+                <p class="text-gray-600 dark:text-gray-400" data-aos="fade-up">
+                    La sensibilisation et la formation sont essentielles pour se protéger contre ces attaques qui
+                    deviennent de plus en plus sophistiquées.
+                </p>
+            </div>
+        </div>
+    </section>
 
+<!-- Section FAQ -->
+<section class="py-16 bg-gray-50 dark:bg-dark-200">
+    <div class="container mx-auto px-4">
+        <h3 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Questions Fréquentes</h3>
+        <div class="max-w-3xl mx-auto">
+            <!-- Question 1 -->
+            <div class="mb-6" data-aos="fade-up">
+                <button class="faq-button flex justify-between items-center w-full p-6 bg-white dark:bg-dark-100 rounded-lg shadow-sm hover:bg-gray-50">
+                    <span class="font-semibold">Comment identifier un email de phishing ?</span>
+                    <svg class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div class="hidden p-6 bg-white dark:bg-dark-100 rounded-lg mt-2">
+                    <p class="text-gray-600 dark:text-gray-400">Vérifiez l'adresse email de l'expéditeur, méfiez-vous des fautes d'orthographe, et ne cliquez jamais sur des liens suspects.</p>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="mb-6" data-aos="fade-up">
+                <button class="faq-button flex justify-between items-center w-full p-6 bg-white dark:bg-dark-100 rounded-lg shadow-sm hover:bg-gray-50">
+                    <span class="font-semibold">Que faire si je suis victime de phishing ?</span>
+                    <svg class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div class="hidden p-6 bg-white dark:bg-dark-100 rounded-lg mt-2">
+                    <p class="text-gray-600 dark:text-gray-400">Changez immédiatement vos mots de passe, contactez votre banque si nécessaire, et signalez l'incident aux autorités compétentes.</p>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="mb-6" data-aos="fade-up">
+                <button class="faq-button flex justify-between items-center w-full p-6 bg-white dark:bg-dark-100 rounded-lg shadow-sm hover:bg-gray-50">
+                    <span class="font-semibold">Comment se protéger du phishing ?</span>
+                    <svg class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div class="hidden p-6 bg-white dark:bg-dark-100 rounded-lg mt-2">
+                    <p class="text-gray-600 dark:text-gray-400">Utilisez l'authentification à deux facteurs, gardez vos logiciels à jour, et formez-vous régulièrement aux bonnes pratiques de sécurité.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
     <!-- Section Contact -->
     <section id="contact" class="py-16 bg-gray-50 dark:bg-dark-200">
         <div class="container mx-auto px-4">
@@ -170,18 +284,25 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-gray-700 dark:text-gray-300 mb-2" for="nom">Nom</label>
-                            <input type="text" id="nom" class="w-full px-4 py-2 border rounded-lg dark:bg-dark-100 dark:border-gray-600 focus:outline-none focus:border-blue-500" required>
+                            <input type="text" id="nom"
+                                class="w-full px-4 py-2 border rounded-lg dark:bg-dark-100 dark:border-gray-600 focus:outline-none focus:border-blue-500"
+                                required>
                         </div>
                         <div>
                             <label class="block text-gray-700 dark:text-gray-300 mb-2" for="email">Email</label>
-                            <input type="email" id="email" class="w-full px-4 py-2 border rounded-lg dark:bg-dark-100 dark:border-gray-600 focus:outline-none focus:border-blue-500" required>
+                            <input type="email" id="email"
+                                class="w-full px-4 py-2 border rounded-lg dark:bg-dark-100 dark:border-gray-600 focus:outline-none focus:border-blue-500"
+                                required>
                         </div>
                     </div>
                     <div>
                         <label class="block text-gray-700 dark:text-gray-300 mb-2" for="message">Message</label>
-                        <textarea id="message" rows="5" class="w-full px-4 py-2 border rounded-lg dark:bg-dark-100 dark:border-gray-600 focus:outline-none focus:border-blue-500" required></textarea>
+                        <textarea id="message" rows="5"
+                            class="w-full px-4 py-2 border rounded-lg dark:bg-dark-100 dark:border-gray-600 focus:outline-none focus:border-blue-500"
+                            required></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition transform hover:scale-105">
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition transform hover:scale-105">
                         Envoyer
                     </button>
                 </form>
@@ -295,11 +416,36 @@
 
 
         // Formulaire de contact
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        document.getElementById('contactForm').addEventListener('submit', function (e) {
             e.preventDefault();
             // Ajouter la logique d'envoi du formulaire
             alert('Message envoyé avec succès !');
         });
+        // Attendre que le document soit chargé
+        document.addEventListener('DOMContentLoaded', function () {
+            // Sélectionner tous les boutons de la FAQ
+            const faqButtons = document.querySelectorAll('.faq-button');
+
+            // Ajouter un écouteur d'événement à chaque bouton
+            faqButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Trouver la réponse associée à ce bouton
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('svg');
+
+                    // Toggle la classe hidden sur la réponse
+                    answer.classList.toggle('hidden');
+
+                    // Rotation de l'icône
+                    if (answer.classList.contains('hidden')) {
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        });
     </script>
 </body>
+
 </html>
