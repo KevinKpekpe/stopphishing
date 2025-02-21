@@ -1,11 +1,64 @@
+<?php
+session_start();
+require_once ('db.php');
+$errors = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Récupération des données du formulaire
+    $email = trim($_POST['email'] ?? '');
+    $mot_de_passe = $_POST['mot_de_passe'] ?? '';
+
+    if (empty($email)) {
+        $errors[] = "L'adresse email est requise.";
+    }
+    if (empty($mot_de_passe)) {
+        $errors[] = "Le mot de passe est requis.";
+    }
+
+    if (empty($errors)) {
+        // Récupération de l'utilisateur selon l'email
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        if ($user) {
+            // Vérification du mot de passe
+            if (password_verify($mot_de_passe, $user['mot_de_passe'])) {
+                // Authentification réussie, démarrage de la session utilisateur
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['email']   = $user['email'];
+                $_SESSION['nom']     = $user['nom'];
+                $_SESSION['prenom']  = $user['prenom'];
+                $_SESSION['role']    = $user['role'];
+                $_SESSION['photo_profil'] = $user['photo_profil'];
+
+                // Redirection en fonction du rôle de l'utilisateur
+                if ($user['role'] === 'admin') {
+                    header("Location: admin/index.php");
+                    exit;
+                } else {
+                    header("Location: index.php");
+                    exit;
+                }
+            } else {
+                $errors[] = "Email ou mot de passe incorrect.";
+            }
+        } else {
+            $errors[] = "Email ou mot de passe incorrect.";
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StopPhishing - Connexion Sécurisée</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen">
     <div class="flex items-center justify-center min-h-screen">
         <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4 border border-blue-100">
@@ -13,7 +66,7 @@
             <div class="flex flex-col items-center mb-8 space-y-4">
                 <div class="bg-gradient-to-br from-blue-600 to-indigo-600 w-16 h-16 rounded-2xl flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                 </div>
                 <h1 class="text-3xl font-bold text-gray-800">
@@ -21,17 +74,27 @@
                 </h1>
             </div>
 
+            <!-- Affichage des erreurs -->
+            <?php if (!empty($errors)) : ?>
+                <div class="mb-4 p-4 bg-red-100 text-red-600 rounded">
+                    <?php foreach ($errors as $error) : ?>
+                        <p><?= htmlspecialchars($error) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
             <!-- Formulaire -->
-            <form class="space-y-6">
+            <form class="space-y-6" action="" method="post">
                 <!-- Champ Email -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Adresse email</label>
-                    <input 
-                        type="email" 
+                    <input
+                        type="email"
+                        name="email"
                         class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all placeholder-blue-300"
                         placeholder="votre@email.com"
                         required
-                    >
+                        value="<?= htmlspecialchars($email ?? '') ?>">
                 </div>
 
                 <!-- Champ Mot de passe -->
@@ -40,24 +103,23 @@
                         <label class="block text-sm font-medium text-gray-700">Mot de passe</label>
                         <a href="#" class="text-blue-600 text-sm hover:underline font-medium">Oublié ?</a>
                     </div>
-                    <input 
-                        type="password" 
+                    <input
+                        type="password"
+                        name="mot_de_passe"
                         class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all placeholder-blue-300"
                         placeholder="••••••••"
-                        required
-                    >
+                        required>
                 </div>
 
                 <!-- Bouton Connexion -->
-                <button 
+                <button
                     type="submit"
-                    class="w-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-                >
+                    class="w-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
                     Se connecter
                 </button>
                 <!-- Inscription -->
                 <p class="text-center text-sm text-blue-600">
-                    Pas encore de compte ? 
+                    Pas encore de compte ?
                     <a href="inscription.php" class="font-semibold hover:underline">S'inscrire</a>
                 </p>
             </form>
@@ -82,4 +144,5 @@
         </div>
     </footer>
 </body>
+
 </html>

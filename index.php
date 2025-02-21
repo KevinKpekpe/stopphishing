@@ -9,9 +9,9 @@
                     <p class="text-xl mb-8">Découvrez comment identifier et vous protéger des tentatives d'hameçonnage
                         en ligne.</p>
                     <div class="flex space-x-4">
-                        <a href="#types"
+                        <a href="inscription.php"
                             class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 transition transform hover:scale-105">
-                            En savoir plus
+                           Inscription
                         </a>
                         <a href="#contact"
                             class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-blue-600 transition transform hover:scale-105">
@@ -240,4 +240,27 @@
             </div>
         </div>
     </section>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+  const profileButton = document.getElementById("profileButton");
+  const profileDropdown = document.getElementById("profileDropdown");
+  if (profileButton) {
+    profileButton.addEventListener("click", function(e) {
+      e.stopPropagation();
+      profileDropdown.classList.toggle("hidden");
+    });
+  }
+  document.addEventListener("click", function() {
+    if (profileDropdown && !profileDropdown.classList.contains("hidden")) {
+      profileDropdown.classList.add("hidden");
+    }
+  });
+
+  const mobileMenuButton = document.getElementById("mobileMenuButton");
+  const mobileMenu = document.getElementById("mobileMenu");
+  mobileMenuButton.addEventListener("click", function() {
+    mobileMenu.classList.toggle("hidden");
+  });
+});
+    </script>
     <?php include('footer.php'); ?>

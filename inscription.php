@@ -1,90 +1,102 @@
 <?php
+// inscription.php
+
 session_start();
 
 require_once('db.php');
 
 $errors = [];
-$success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $nom = trim(filter_input(INPUT_POST, 'nom', FILTER_SANITIZE_STRING));
-  $prenom = trim(filter_input(INPUT_POST, 'prenom', FILTER_SANITIZE_STRING));
-  $sexe = trim(filter_input(INPUT_POST, 'sexe', FILTER_SANITIZE_STRING));
-  $date_naissance = trim(filter_input(INPUT_POST, 'date_naissance', FILTER_SANITIZE_STRING));
-  $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
-  $telephone = trim(filter_input(INPUT_POST, 'telephone', FILTER_SANITIZE_STRING));
-  $mot_de_passe = trim(filter_input(INPUT_POST, 'mot_de_passe', FILTER_SANITIZE_STRING));
+  // Récupération et nettoyage des champs du formulaire
+  $nom               = trim($_POST['nom'] ?? '');
+  $prenom            = trim($_POST['prenom'] ?? '');
+  $sexe              = $_POST['sexe'] ?? '';
+  $date_naissance    = $_POST['date_naissance'] ?? '';
+  $email             = trim($_POST['email'] ?? '');
+  $telephone         = trim($_POST['telephone'] ?? '');
+  $mot_de_passe      = $_POST['mot_de_passe'] ?? '';
+  $confirm_mot_de_passe = $_POST['confirm_mot_de_passe'] ?? '';
+
+  // Gestion de la photo de profil
+  $photo_profil = null;
+  if (isset($_FILES['photo_profil']) && $_FILES['photo_profil']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath  = $_FILES['photo_profil']['tmp_name'];
+    $fileName     = $_FILES['photo_profil']['name'];
+    $fileNameCmps = explode(".", $fileName);
+    $fileExtension = strtolower(end($fileNameCmps));
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+    if (in_array($fileExtension, $allowedExtensions)) {
+      $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+      $uploadDir   = './uploads/';
+      if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+      }
+      $destPath = $uploadDir . $newFileName;
+      if (move_uploaded_file($fileTmpPath, $destPath)) {
+        $photo_profil = $destPath;
+      } else {
+        $errors[] = "Erreur lors du téléchargement de la photo de profil.";
+      }
+    } else {
+      $errors[] = "Extension de fichier non autorisée pour la photo de profil.";
+    }
+  }
 
   // Validation des champs
   if (empty($nom)) {
-    $errors[] = "Le nom est requis";
+    $errors[] = "Le champ Nom est requis.";
   }
   if (empty($prenom)) {
-    $errors[] = "Le prénom est requis";
+    $errors[] = "Le champ Prénom est requis.";
   }
-  if (!in_array($sexe, ['M', 'F', 'A'])) {
-    $errors[] = "Le sexe sélectionné n'est pas valide";
+  if (empty($sexe) || !in_array($sexe, ['M', 'F', 'A'])) {
+    $errors[] = "Veuillez sélectionner un sexe valide.";
   }
   if (empty($date_naissance)) {
-    $errors[] = "La date de naissance est requise";
+    $errors[] = "Le champ Date de naissance est requis.";
   }
-  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = "L'adresse email n'est pas valide";
+  if (empty($email)) {
+    $errors[] = "Le champ Email est requis.";
+  } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = "Format d'email invalide.";
   }
-  if (!preg_match("/^[0-9]{10}$/", $telephone)) {
-    $errors[] = "Le numéro de téléphone n'est pas valide";
+  if (empty($telephone)) {
+    $errors[] = "Le champ Téléphone est requis.";
+  } elseif (!preg_match('/^[0-9]{10}$/', $telephone)) {
+    $errors[] = "Format de téléphone invalide.";
   }
-  if (strlen($mot_de_passe) < 8) {
-    $errors[] = "Le mot de passe doit contenir au moins 8 caractères";
+  if (empty($mot_de_passe)) {
+    $errors[] = "Le champ Mot de passe est requis.";
+  }
+  if (empty($confirm_mot_de_passe)) {
+    $errors[] = "Le champ Confirmation du mot de passe est requis.";
+  }
+  if ($mot_de_passe !== $confirm_mot_de_passe) {
+    $errors[] = "Les mots de passe ne correspondent pas.";
   }
 
-  // Vérification si l'email existe déjà
-  $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
-  $stmt->execute([$email]);
-  if ($stmt->fetchColumn() > 0) {
-    $errors[] = "Cette adresse email est déjà utilisée";
-  }
-
-  // Traitement de la photo
-  $photo_path = null;
-  if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-    $allowed = ['jpg', 'jpeg', 'png', 'gif'];
-    $filename = $_FILES['photo']['name'];
-    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-
-    if (!in_array($ext, $allowed)) {
-      $errors[] = "Le format de l'image n'est pas accepté";
-    } else {
-      $photo_path = 'uploads/' . uniqid() . '.' . $ext;
-      if (!move_uploaded_file($_FILES['photo']['tmp_name'], $photo_path)) {
-        $errors[] = "Erreur lors de l'upload de l'image";
-      }
+  // Vérifier si l'email existe déjà
+  if (empty($errors)) {
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    if ($stmt->fetch()) {
+      $errors[] = "Cet email est déjà utilisé.";
     }
   }
 
   // Si aucune erreur, insertion dans la base de données
   if (empty($errors)) {
-    try {
-      $stmt = $pdo->prepare("
-                INSERT INTO users (nom, prenom, sexe, date_naissance, email, telephone, photo_profil, mot_de_passe, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'internaute')
-            ");
-
-      $stmt->execute([
-        $nom,
-        $prenom,
-        $sexe,
-        $date_naissance,
-        $email,
-        $telephone,
-        $photo_path,
-        password_hash($mot_de_passe, PASSWORD_DEFAULT)
-      ]);
-
-      $success = true;
-      header("refresh:3;url=connexion.php"); // Redirection après 3 secondes
-    } catch (PDOException $e) {
-      $errors[] = "Erreur lors de l'inscription : " . $e->getMessage();
+    $hashedPassword = password_hash($mot_de_passe, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("INSERT INTO users 
+      (nom, prenom, sexe, date_naissance, email, telephone, photo_profil, mot_de_passe, role) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'internaute')");
+    if ($stmt->execute([$nom, $prenom, $sexe, $date_naissance, $email, $telephone, $photo_profil, $hashedPassword])) {
+      echo "<p>Inscription réussie !</p>";
+      exit;
+    } else {
+      $errors[] = "Erreur lors de l'inscription, veuillez réessayer.";
     }
   }
 }
@@ -106,7 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="flex flex-col items-center mb-8 space-y-4">
         <div class="bg-gradient-to-br from-blue-600 to-indigo-600 w-16 h-16 rounded-2xl flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
         </div>
         <h1 class="text-3xl font-bold text-gray-800">
@@ -115,118 +128,117 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="text-blue-600 text-sm">Création de compte</p>
       </div>
 
-      <!-- Formulaire d'inscription en grille 3 par 3 -->
-      <form class="space-y-4" method="post" enctype="multipart/form-data">
-        <!-- Ajoutez ceci juste après l'ouverture du formulaire dans votre HTML -->
-        <?php if (!empty($errors)): ?>
-          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Erreurs :</strong>
-            <ul class="list-disc list-inside">
-              <?php foreach ($errors as $error): ?>
-                <li><?php echo htmlspecialchars($error); ?></li>
-              <?php endforeach; ?>
-            </ul>
-          </div>
-        <?php endif; ?>
+      <?php if (!empty($errors)) : ?>
+        <div class="mb-4 p-4 bg-red-100 text-red-600 rounded">
+          <?php foreach ($errors as $error) : ?>
+            <p><?= htmlspecialchars($error) ?></p>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
 
-        <?php if ($success): ?>
-          <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Succès !</strong>
-            <span class="block sm:inline">Votre compte a été créé avec succès. Redirection en cours...</span>
-          </div>
-        <?php endif; ?>
+      <!-- Formulaire d'inscription -->
+      <form class="space-y-4" method="post" enctype="multipart/form-data">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Champ 1 : Nom -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
-            <input
-              type="text"
+            <label for="nom" class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+            <input type="text" name="nom" id="nom"
               class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
-              required>
+              required value="<?= htmlspecialchars($nom ?? '') ?>">
           </div>
 
           <!-- Champ 2 : Prénom -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
-            <input
-              type="text"
+            <label for="prenom" class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+            <input type="text" name="prenom" id="prenom"
               class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
-              required>
+              required value="<?= htmlspecialchars($prenom ?? '') ?>">
           </div>
 
           <!-- Champ 3 : Sexe -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Sexe</label>
-            <select
+            <label for="sexe" class="block text-sm font-medium text-gray-700 mb-2">Sexe</label>
+            <select name="sexe" id="sexe"
               class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
               required>
               <option value="">Sélectionner</option>
-              <option value="M">Masculin</option>
-              <option value="F">Féminin</option>
-              <option value="A">Autre</option>
+              <option value="M" <?= (isset($sexe) && $sexe === 'M') ? 'selected' : '' ?>>Masculin</option>
+              <option value="F" <?= (isset($sexe) && $sexe === 'F') ? 'selected' : '' ?>>Féminin</option>
+              <option value="A" <?= (isset($sexe) && $sexe === 'A') ? 'selected' : '' ?>>Autre</option>
             </select>
           </div>
 
           <!-- Champ 4 : Date de naissance -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Date de naissance</label>
-            <input
-              type="date"
+            <label for="date_naissance" class="block text-sm font-medium text-gray-700 mb-2">Date de naissance</label>
+            <input type="date" name="date_naissance" id="date_naissance"
               class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
-              required>
+              required value="<?= htmlspecialchars($date_naissance ?? '') ?>">
           </div>
 
           <!-- Champ 5 : Email -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input
-              type="email"
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <input type="email" name="email" id="email"
               class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
-              required>
+              required value="<?= htmlspecialchars($email ?? '') ?>">
           </div>
 
           <!-- Champ 6 : Téléphone -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
-            <input
-              type="tel"
+            <label for="telephone" class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+            <input type="tel" name="telephone" id="telephone"
               class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
-              pattern="[0-9]{10}"
-              placeholder="0612345678"
-              required>
+              pattern="[0-9]{10}" placeholder="0612345678"
+              required value="<?= htmlspecialchars($telephone ?? '') ?>">
           </div>
 
-          <!-- Champ 7 : Photo de profil (sur toute la largeur) -->
+          <!-- Champ 7 : Photo de profil -->
           <div class="md:col-span-3">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Photo de profil</label>
+            <label for="photo_profil" class="block text-sm font-medium text-gray-700 mb-2">Photo de profil</label>
             <div class="flex items-center space-x-4">
               <div class="shrink-0">
-                <img id="preview" class="h-16 w-16 object-cover rounded-full border-2 border-blue-200" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Preview">
+                <img id="preview" class="h-16 w-16 object-cover rounded-full border-2 border-blue-200"
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Preview">
               </div>
               <label class="block">
-                <input
-                  type="file"
+                <input type="file" name="photo_profil" id="photo_profil"
                   class="block w-full text-sm text-blue-600
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100"
+                         file:mr-4 file:py-2 file:px-4
+                         file:rounded-full file:border-0
+                         file:text-sm file:font-semibold
+                         file:bg-blue-50 file:text-blue-700
+                         hover:file:bg-blue-100"
                   accept="image/*"
                   onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])">
               </label>
             </div>
           </div>
+
+          <!-- Champ 8 : Mot de passe -->
+          <div>
+            <label for="mot_de_passe" class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+            <input type="password" name="mot_de_passe" id="mot_de_passe"
+              class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+              required>
+          </div>
+
+          <!-- Champ 9 : Confirmation du mot de passe -->
+          <div>
+            <label for="confirm_mot_de_passe" class="block text-sm font-medium text-gray-700 mb-2">Confirmation du mot de passe</label>
+            <input type="password" name="confirm_mot_de_passe" id="confirm_mot_de_passe"
+              class="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+              required>
+          </div>
         </div>
 
         <!-- Bouton d'inscription -->
-        <button
-          type="submit"
+        <button type="submit"
           class="w-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 mt-6">
           S'inscrire
         </button>
 
-        <!-- Lien connexion -->
+        <!-- Lien vers la connexion -->
         <p class="text-center text-sm text-blue-600 mt-4">
           Déjà un compte ?
           <a href="connexion.php" class="font-semibold hover:underline">Se connecter</a>
