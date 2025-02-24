@@ -4,7 +4,6 @@ require_once ('db.php');
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération des données du formulaire
     $email = trim($_POST['email'] ?? '');
     $mot_de_passe = $_POST['mot_de_passe'] ?? '';
 
@@ -22,17 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
 
         if ($user) {
-            // Vérification du mot de passe
             if (password_verify($mot_de_passe, $user['mot_de_passe'])) {
-                // Authentification réussie, démarrage de la session utilisateur
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['email']   = $user['email'];
                 $_SESSION['nom']     = $user['nom'];
                 $_SESSION['prenom']  = $user['prenom'];
                 $_SESSION['role']    = $user['role'];
                 $_SESSION['photo_profil'] = $user['photo_profil'];
-
-                // Redirection en fonction du rôle de l'utilisateur
                 if ($user['role'] === 'admin') {
                     header("Location: admin/index.php");
                     exit;
